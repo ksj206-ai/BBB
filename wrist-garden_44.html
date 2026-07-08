@@ -370,7 +370,7 @@
     const ROUTINE=[
       {mode:"glide",  icon:"✋",name:"손 풀기 (기지개)", care:"🖐️ 손가락 풀기", orient:"손바닥을 카메라로, 손가락 잘 보이게", how:["손을 쫙 펴기 → 갈고리 → 주먹","천천히 순서대로 손가락 활주","타이핑 전 손가락 관절 예열"], reps:4},
       {mode:"dig",    icon:"🔨",name:"밭 망치는 두더지 잡기", care:"🌱 밭 지키기", orient:"손을 옆으로 세워 — 손날(새끼쪽)이 카메라로", how:["손을 옆으로 세워요 — 손날(새끼쪽)이 카메라로","윗줄 두더지는 손목 위로 펴서, 아랫줄은 아래로 굽혀서 잡기","손목을 중립으로 돌아왔다가 다음 두더지!"], digs:4},
-      {mode:"rain",   icon:"💧",name:"촉촉하게 물 주기", care:"💦 물 주기", orient:"주먹을 쥐고 손바닥이 카메라로", how:["주먹 쥐고 손바닥을 카메라로","손목을 좌우로 기울여 물뿌리개 이동","💧물방울은 받고 🍂마른 잎은 피해요"], goal:10},
+      {mode:"rain",   icon:"💧",name:"촉촉하게 물 주기", care:"💦 물 주기", orient:"주먹을 가볍게 쥐고 준비해요", how:["주먹을 가볍게 쥐어요","손목을 좌우로 기울여 물뿌리개 이동","💧물방울은 받고 🍂마른 잎은 피해요"], goal:10},
       {mode:"stretch",icon:"☀️",name:"따스한 햇빛 쬐기", care:"🌞 햇빛 듬뿍", orient:"편하게 — 끝범위에서 길게", how:["손목을 끝까지 쭉 펴서 길게 유지","당기는 느낌까지만(통증 X)","오래 쓴 손목 뭉친 느낌 풀기"], reps:2, hold:5000, th:12},
       {mode:"pinch",  icon:"🍓",name:"잘 익은 열매 따기", care:"🍓 열매 수확", orient:"손바닥을 카메라로, 손가락 잘 보이게", how:["잘 익은 빨간 열매가 반짝여요","엄지와 검지로 콕 집어 따요(핀치)","손가락 살짝 폈다가 다음 열매!"], reps:8},
       {mode:"grip",   icon:"🦋",name:"몰려드는 벌레 쫓기", care:"🦋 벌레 쫓기", orient:"손바닥을 카메라로, 손가락 잘 보이게", how:["신호를 보고 재빨리 손 모양 바꾸기","🪨 바위 = 주먹 꽉 / 🍃 잎벌레 = 손바닥 쫙","반응하며 손 쥐락펴락 시원하게 풀기"], reps:10},
@@ -437,7 +437,7 @@
     function drawParts(){for(const p of parts){ctx.globalAlpha=Math.max(0,1-p.t/p.life);ctx.fillStyle=p.c;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,7);ctx.fill();}ctx.globalAlpha=1;}
     function rr(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
     function cloud(x,y,s){s=s||1;ctx.save();ctx.translate(x,y);ctx.scale(s,s);ctx.fillStyle="rgba(255,255,255,.92)";ctx.beginPath();ctx.arc(0,0,17,0,7);ctx.arc(22,5,22,0,7);ctx.arc(46,0,16,0,7);ctx.arc(22,13,20,0,7);ctx.arc(-12,6,12,0,7);ctx.fill();ctx.globalAlpha=.5;ctx.fillStyle="#dff1ff";ctx.beginPath();ctx.arc(22,15,18,0,Math.PI);ctx.fill();ctx.restore();}
-    let _speckle=null,_bokeh=null,_stars=null,_flowers=null,_petals=null,_dfly=null;
+    let _speckle=null,_bokeh=null,_stars=null,_flowers=null,_petals=null,_dfly=null,_puddles=null;
     function rndSeed(n){let s=n>>>0;return()=>{s=(s*1103515245+12345)&0x7fffffff;return s/0x7fffffff;};}
     function initDecor(){const r=rndSeed(7);_speckle=[];for(let i=0;i<40;i++)_speckle.push({x:r()*W,y:60+r()*(H-90),a:0.18+r()*0.4,sp:0.4+r()*0.8,ph:r()*6.28});
       const r2=rndSeed(23);_bokeh=[];for(let i=0;i<6;i++)_bokeh.push({x:r2()*W,y:30+r2()*150,r:16+r2()*34,a:0.05+r2()*0.06});
@@ -520,6 +520,45 @@
       cropTop(66,groundY+26);cropTop(W-64,groundY+34);cropTop(150,groundY+150);cropTop(W-150,groundY+150);
       scarecrow(W*0.10,groundY-4);
       dragonflies(t);
+      grass(t);
+    }
+    function drawRainField(t){
+      if(!_speckle)initDecor();
+      if(!_puddles){const r=rndSeed(33);_puddles=[];for(let i=0;i<4;i++)_puddles.push({bx:0.16+r()*0.68,by:0.5+r()*0.42,rw:34+r()*30,ph:r()*6.28});}
+      const gt=groundY-30;
+      // 비 갠 하늘 (개는 중 — 서늘한 청록빛)
+      const sg=ctx.createLinearGradient(0,0,0,gt);sg.addColorStop(0,"#88b6cf");sg.addColorStop(.5,"#aecdcb");sg.addColorStop(1,"#d8e6c6");ctx.fillStyle=sg;ctx.fillRect(0,0,W,gt);
+      // 구름 사이로 새어나오는 햇살
+      const sx=W*0.72,sy=78;const rg=ctx.createRadialGradient(sx,sy,8,sx,sy,190);rg.addColorStop(0,"rgba(255,248,206,.7)");rg.addColorStop(1,"rgba(255,248,206,0)");ctx.fillStyle=rg;ctx.fillRect(0,0,W,gt);
+      ctx.fillStyle="rgba(255,244,188,.92)";ctx.beginPath();ctx.arc(sx,sy,25,0,7);ctx.fill();
+      // 무지개
+      const rbx=W*0.5,rby=gt+40,rbr=W*0.46,rbCols=["rgba(233,120,140,.3)","rgba(246,179,92,.28)","rgba(255,214,110,.28)","rgba(122,200,120,.28)","rgba(124,196,236,.3)","rgba(150,140,214,.28)"];
+      ctx.save();ctx.lineWidth=7;for(let i=0;i<rbCols.length;i++){ctx.strokeStyle=rbCols[i];ctx.beginPath();ctx.arc(rbx,rby,rbr-i*7,Math.PI*1.06,Math.PI*1.94);ctx.stroke();}ctx.restore();
+      // 걷히는 비구름
+      cloud(((t*0.008)%(W+320))-160,58,1.05);cloud(((t*0.005)%(W+380))-190,104,0.85);
+      ctx.globalAlpha=.5;cloud(((t*0.006)%(W+300))+40,150,0.7);ctx.globalAlpha=1;
+      // 먼 안개 언덕
+      ctx.fillStyle="rgba(148,188,168,.5)";ctx.beginPath();ctx.moveTo(0,gt);
+      for(let x=0;x<=W;x+=26){const y=gt-Math.abs(Math.sin(x*0.006+0.6))*30-Math.sin(x*0.021)*5;ctx.lineTo(x,y);}
+      ctx.lineTo(W,gt);ctx.closePath();ctx.fill();
+      // 촉촉한 잔디 정원 바닥
+      const gg=ctx.createLinearGradient(0,gt,0,H);gg.addColorStop(0,"#7cac60");gg.addColorStop(.4,"#5f9450");gg.addColorStop(1,"#477a3c");ctx.fillStyle=gg;ctx.fillRect(0,gt,W,H-gt);
+      // 젖은 윤기 (은은한 반사 띠)
+      ctx.globalAlpha=.12;ctx.fillStyle="#e6f6d8";for(let i=0;i<3;i++){ctx.beginPath();ctx.ellipse(W*(0.26+i*0.27),gt+46+i*34,190,18,0,0,7);ctx.fill();}ctx.globalAlpha=1;
+      // 산울타리(정원 경계) + 이슬
+      ctx.fillStyle="#4f8a44";for(let x=-10;x<W+30;x+=46){ctx.beginPath();ctx.arc(x,gt-2,25,Math.PI,0);ctx.fill();}
+      ctx.fillStyle="rgba(224,246,208,.28)";for(let x=-10;x<W+30;x+=46){ctx.beginPath();ctx.arc(x-7,gt-11,9,0,7);ctx.fill();}
+      ctx.fillStyle="rgba(206,238,250,.85)";for(let x=8;x<W;x+=46){const dp=(t*0.0007+x)%1;ctx.globalAlpha=0.5+0.5*Math.sin((t*0.003+x)*0.5);ctx.beginPath();ctx.arc(x,gt+3,1.8,0,7);ctx.fill();}ctx.globalAlpha=1;
+      // 물웅덩이 (하늘 반사 + 잔물결)
+      for(const p of _puddles){const x=W*p.bx,y=gt+p.by*(H-gt),rw=p.rw;ctx.save();ctx.translate(x,y);
+        const pg=ctx.createLinearGradient(0,-rw*0.34,0,rw*0.34);pg.addColorStop(0,"rgba(184,222,242,.6)");pg.addColorStop(1,"rgba(120,180,210,.4)");ctx.fillStyle=pg;ctx.beginPath();ctx.ellipse(0,0,rw,rw*0.34,0,0,7);ctx.fill();
+        ctx.fillStyle="rgba(255,255,255,.24)";ctx.beginPath();ctx.ellipse(-rw*0.2,-rw*0.05,rw*0.5,rw*0.11,0,0,7);ctx.fill();
+        ctx.strokeStyle="rgba(255,255,255,.32)";ctx.lineWidth=1.4;for(let k=0;k<2;k++){const rp=(t*0.0009+p.ph+k*0.5)%1;ctx.globalAlpha=(1-rp)*0.5;ctx.beginPath();ctx.ellipse(0,0,rw*rp,rw*0.34*rp,0,0,7);ctx.stroke();}
+        ctx.globalAlpha=1;ctx.restore();}
+      // 비 좋아하는 수국 + 이슬 잔디
+      hydrangea(96,gt+26);hydrangea(W-96,gt+30);hydrangea(184,gt+58);hydrangea(W-184,gt+62);
+      // 피어오르는 옅은 물안개
+      ctx.globalAlpha=.14;ctx.fillStyle="#eef7ea";for(let i=0;i<4;i++){const mx=W*(0.14+i*0.24),my=gt+30-((t*0.01+i*40)%70);ctx.beginPath();ctx.ellipse(mx+Math.sin(t*0.001+i)*14,my,44,10,0,0,7);ctx.fill();}ctx.globalAlpha=1;
       grass(t);
     }
     function drawScene(t){
@@ -956,7 +995,7 @@
         ghud(s.icon+" "+s.name,bigHint,"윗줄=폄 / 아랫줄=굽힘 · 손목만 굽혔다 폈다","🦫 "+r.caught+" / "+need);
       }
       else if(s.mode==="pinch"){
-        const r=g.r,need=s.reps,cx2=W/2,branchY=150,gap=clamp((pinch-0.18)/0.6,0,1),HOLD=2.0;
+        const r=g.r,need=s.reps,cx2=W/2,branchY=150,gap=clamp((pinch-0.18)/0.6,0,1),HOLD=1.5;
         // 바구니
         const bx=cx2,by=groundY+44;
         ctx.fillStyle="#b5793e";ctx.beginPath();ctx.moveTo(bx-48,by-24);ctx.lineTo(bx+48,by-24);ctx.lineTo(bx+34,by+20);ctx.lineTo(bx-34,by+20);ctx.closePath();ctx.fill();
@@ -973,12 +1012,12 @@
           if(ripe){const pl=Math.sin(now/240)*1.6;ctx.fillStyle="rgba(255,214,120,.38)";ctx.beginPath();ctx.arc(fx,fy,24+pl,0,7);ctx.fill();
             ctx.fillStyle="#e0473f";ctx.beginPath();ctx.arc(fx,fy,15,0,7);ctx.fill();ctx.fillStyle="#ff8a6a";ctx.beginPath();ctx.arc(fx-4,fy-4,4.5,0,7);ctx.fill();
             const off=9+gap*34;ctx.strokeStyle="#c9a06a";ctx.lineWidth=2;ctx.fillStyle="#f6dcb4";for(const sgn of [-1,1]){ctx.beginPath();ctx.arc(fx+sgn*off,fy,7,0,7);ctx.fill();ctx.stroke();}
-            // 유지 게이지 (집은 채로 2초)
+            // 유지 게이지 (집은 채로 1.5초)
             if(r.hold>0){ctx.strokeStyle="#8fe39a";ctx.lineWidth=4;ctx.beginPath();ctx.arc(fx,fy,21,-Math.PI/2,-Math.PI/2+Math.min(1,r.hold/HOLD)*2*Math.PI);ctx.stroke();}
             r.ripeX=fx;r.ripeY=fy;
           } else {ctx.fillStyle="#93b15e";ctx.beginPath();ctx.arc(fx,fy,11,0,7);ctx.fill();ctx.fillStyle="#a6c470";ctx.beginPath();ctx.arc(fx-3,fy-3,3,0,7);ctx.fill();}
         }
-        // 판정 — 집은 채로 2초 유지 = 수확
+        // 판정 — 집은 채로 1.5초 유지 = 수확
         const pinched=pinch<0.34;
         if(pinched&&!comp){r.hold+=dt;
           if(r.hold>=HOLD){r.reps++;setCombo(r.reps);r.hold=0;const fx=r.ripeX||cx2,fy=r.ripeY||branchY;burst(fx,fy,"#e0685a",14);for(let k=0;k<9;k++)addPart(fx,fy,["#e0473f","#e86a5a"][k%2],{vy:2+Math.random()*1.6,vx:(Math.random()-.5)*2.2,life:0.7,r:4,g:10});plantHappy();earnSeeds+=2;chime();popText(r.reps%3===0?cheer():"톡! 🍓","#ffe0d6");setMeter(r.reps/need*100);if(r.reps>=need){popText("수확 완료! 🧺","#fff");finishStep();return;}}}
@@ -1042,7 +1081,7 @@
         ctx.fillStyle="rgba(124,196,236,.18)";ctx.beginPath();ctx.ellipse(pailX,pailY+6,catchW,12,0,0,7);ctx.fill();
         // 좌우 안내 화살표
         ctx.fillStyle="rgba(255,255,255,.3)";ctx.font="22px sans-serif";ctx.textAlign="center";ctx.fillText("◀",cx2-halfW-6,pailY-40);ctx.fillText("▶",cx2+halfW+6,pailY-40);
-        ghud(s.icon+" "+s.name,comp?"":"손목 좌우로 기울여 💧받기","주먹 쥐고 손바닥 카메라 · 💧받고 🍂피하기","💧 "+r.caught+" / "+s.goal);
+        ghud(s.icon+" "+s.name,comp?"":"손목 좌우로 기울여 💧받기","주먹 쥐고 · 💧받고 🍂피하기","💧 "+r.caught+" / "+s.goal);
       }
       else if(s.mode==="angle"){
         const pivX=W/2,pivY=groundY-10,L=150,ta=(-90+g.r.target)*Math.PI/180,ca=(-90+rel)*Math.PI/180;
@@ -1268,8 +1307,9 @@
           pctx.strokeStyle="#7ee0a0";pctx.lineWidth=1.6;pctx.beginPath();for(const[a,b]of HC){pctx.moveTo(h[a].x*118,h[a].y*88);pctx.lineTo(h[b].x*118,h[b].y*88);}pctx.stroke();
           pctx.fillStyle="#4fd08a";for(const p of h){pctx.beginPath();pctx.arc(p.x*118,p.y*88,1.6,0,7);pctx.fill();}}
       }
-      const digPlaying=(sub==="play"&&PLAN[stepIdx]&&PLAN[stepIdx].mode==="dig");
-      if(digPlaying)drawMoleField(now);else drawScene(now);
+      const curMode=(sub==="play"&&PLAN[stepIdx])?PLAN[stepIdx].mode:null;
+      const digPlaying=curMode==="dig",rainPlaying=curMode==="rain";
+      if(digPlaying)drawMoleField(now);else if(rainPlaying)drawRainField(now);else drawScene(now);
       if(sub!=="home"&&sub!=="title"&&sub!=="tut"){ctx.fillStyle="rgba(28,40,24,.24)";ctx.fillRect(0,0,W,H);const sp=ctx.createRadialGradient(W/2,H*0.5,40,W/2,H*0.52,W*0.52);sp.addColorStop(0,"rgba(255,250,235,.16)");sp.addColorStop(1,"rgba(255,250,235,0)");ctx.fillStyle=sp;ctx.fillRect(0,0,W,H);}
       if(sub==="home"){drawBoard(now);}
       else if(sub==="title"||sub==="tut"){drawPot(W/2,groundY+8,1.45,5,now,false,bloomColor,budColor,curSpId);}
