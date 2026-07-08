@@ -373,7 +373,7 @@
       {mode:"rain",   icon:"💧",name:"촉촉하게 물 주기", care:"💦 물 주기", orient:"주먹을 가볍게 쥐고 준비해요", how:["주먹을 가볍게 쥐어요","손목을 좌우로 기울여 물뿌리개 이동","💧물방울은 받고 🍂마른 잎은 피해요"], goal:10},
       {mode:"stretch",icon:"☀️",name:"따스한 햇빛 쬐기", care:"🌞 햇빛 듬뿍", orient:"편하게 — 끝범위에서 길게", how:["손목을 끝까지 쭉 펴서 길게 유지","당기는 느낌까지만(통증 X)","오래 쓴 손목 뭉친 느낌 풀기"], reps:2, hold:5000, th:12},
       {mode:"pinch",  icon:"🍓",name:"잘 익은 열매 따기", care:"🍓 열매 수확", orient:"손바닥을 카메라로, 손가락 잘 보이게", how:["잘 익은 빨간 열매가 반짝여요","엄지와 검지로 콕 집어 따요(핀치)","손가락 살짝 폈다가 다음 열매!"], reps:8},
-      {mode:"grip",   icon:"🦋",name:"몰려드는 벌레 쫓기", care:"🦋 벌레 쫓기", orient:"손바닥을 카메라로, 손가락 잘 보이게", how:["신호를 보고 재빨리 손 모양 바꾸기","🪨 바위 = 주먹 꽉 / 🍃 잎벌레 = 손바닥 쫙","반응하며 손 쥐락펴락 시원하게 풀기"], reps:10},
+      {mode:"grip",   icon:"🦋",name:"몰려드는 벌레 쫓기", care:"🦋 벌레 쫓기", orient:"손바닥을 카메라로, 손가락 잘 보이게", how:["새싹으로 날아오는 벌레를 막아요","🪲딱정벌레 = ✊주먹 / 🐛잎벌레 = 🖐️손바닥","신호 보고 재빨리 손 모양 바꿔 쳐내기"], reps:10},
       {mode:"isopump",icon:"💉",name:"영양제 펌핑하기", care:"💪 영양 가득", orient:"손바닥을 카메라로, 손가락 위로", how:["손목은 일직선(중립)으로 유지","그 상태로 주먹을 꽉! 쥐어요","손목 주변 근력 케어(버티기)"], reps:4},
     ];
     let PLAN=ROUTINE.slice();
@@ -499,6 +499,23 @@
       for(const d of _dfly){const x=W*d.bx+Math.sin(t*d.sp+d.ph)*d.ax,y=groundY*d.by+Math.cos(t*d.sp*1.4+d.ph)*d.ay;dragonfly(x,y,t,d.ph);}}
     function cropTop(x,y){ctx.strokeStyle="#4ea83f";ctx.lineWidth=3;ctx.lineCap="round";for(let k=-1;k<=1;k++){ctx.beginPath();ctx.moveTo(x,y);ctx.quadraticCurveTo(x+k*8,y-14,x+k*12,y-24);ctx.stroke();}ctx.fillStyle="#e08a4a";ctx.beginPath();ctx.moveTo(x-5,y);ctx.lineTo(x+5,y);ctx.lineTo(x,y+12);ctx.closePath();ctx.fill();}
     function scarecrow(x,y){ctx.strokeStyle="#7a5a34";ctx.lineWidth=5;ctx.lineCap="round";ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y-64);ctx.moveTo(x-26,y-44);ctx.lineTo(x+26,y-44);ctx.stroke();ctx.strokeStyle="#c94f3a";ctx.lineWidth=7;ctx.beginPath();ctx.moveTo(x-18,y-40);ctx.lineTo(x+18,y-40);ctx.stroke();ctx.fillStyle="#e7d29a";ctx.beginPath();ctx.arc(x,y-72,11,0,7);ctx.fill();ctx.fillStyle="#6b4a24";ctx.fillRect(x-16,y-80,32,5);ctx.beginPath();ctx.arc(x,y-82,9,Math.PI,0);ctx.fill();ctx.fillStyle="#3a2a16";ctx.beginPath();ctx.arc(x-4,y-73,1.6,0,7);ctx.arc(x+4,y-73,1.6,0,7);ctx.fill();}
+    function pestBug(x,y,t,rock,scale){scale=scale||1;const flap=Math.sin(t*0.03)*0.5+0.5;ctx.save();ctx.translate(x,y);ctx.scale(scale,scale);ctx.rotate(Math.sin(t*0.006)*0.12);
+      ctx.fillStyle="rgba(20,30,12,.16)";ctx.beginPath();ctx.ellipse(0,16,14,4,0,0,7);ctx.fill();
+      if(rock){ // 딱정벌레(단단) — 주먹으로 콩!
+        ctx.globalAlpha=.55;ctx.fillStyle="#c9d6df";for(const sg of[-1,1]){ctx.save();ctx.scale(sg,1);ctx.beginPath();ctx.ellipse(9,-3-flap*3,9,5,-0.5,0,7);ctx.fill();ctx.restore();}ctx.globalAlpha=1;
+        ctx.fillStyle="#5a4636";ctx.beginPath();ctx.ellipse(0,0,11,13,0,0,7);ctx.fill();
+        ctx.fillStyle="#3f3126";ctx.fillRect(-1.4,-12,2.8,24);
+        ctx.fillStyle="#7a6350";ctx.beginPath();ctx.ellipse(-3,-4,3,4,0,0,7);ctx.fill();
+        ctx.strokeStyle="#3f3126";ctx.lineWidth=1.6;ctx.lineCap="round";ctx.beginPath();ctx.moveTo(-3,-11);ctx.lineTo(-6,-16);ctx.moveTo(3,-11);ctx.lineTo(6,-16);ctx.stroke();
+        ctx.fillStyle="#ffe08a";ctx.beginPath();ctx.arc(-3,-6,1.6,0,7);ctx.arc(3,-6,1.6,0,7);ctx.fill();
+      } else { // 잎벌레(부드러움) — 손바닥으로 휙!
+        ctx.globalAlpha=.4+flap*0.2;ctx.fillStyle="#eaf7c8";for(const sg of[-1,1]){ctx.save();ctx.scale(sg,1);ctx.beginPath();ctx.ellipse(10,-2-flap*4,12,6,-0.4,0,7);ctx.fill();ctx.restore();}ctx.globalAlpha=1;
+        ctx.fillStyle="#7bbf4e";ctx.beginPath();ctx.ellipse(0,2,8,12,0,0,7);ctx.fill();
+        ctx.fillStyle="#5fa23a";for(let k=-1;k<=2;k++){ctx.beginPath();ctx.ellipse(0,k*4,7-Math.abs(k),3,0,0,7);ctx.fill();}
+        ctx.strokeStyle="#4a7c2c";ctx.lineWidth=1.4;ctx.lineCap="round";ctx.beginPath();ctx.moveTo(-2,-9);ctx.lineTo(-5,-14);ctx.moveTo(2,-9);ctx.lineTo(5,-14);ctx.stroke();
+        ctx.fillStyle="#2f4a1c";ctx.beginPath();ctx.arc(-2.4,-6,1.4,0,7);ctx.arc(2.4,-6,1.4,0,7);ctx.fill();
+      }
+      ctx.restore();}
     function drawMoleField(t){
       if(!_speckle)initDecor();
       const g=ctx.createLinearGradient(0,0,0,groundY);g.addColorStop(0,"#9cc4d6");g.addColorStop(.55,"#c7dcae");g.addColorStop(1,"#ead79c");ctx.fillStyle=g;ctx.fillRect(0,0,W,groundY-38);
@@ -804,7 +821,7 @@
       else if(mode==="rain")g.r={items:[],lastSpawn:0,caught:0,combo:0};
       else if(mode==="gonogo")g.r={trial:0,score:0,combo:0,phase:"wait",until:0,cue:null};
       else if(mode==="angle")g.r={round:0,target:newAngle(0),hold:0};
-      else if(mode==="grip")g.r={score:0,combo:0,trial:0,phase:"wait",until:0,cue:null};
+      else if(mode==="grip")g.r={score:0,combo:0,trial:0,phase:"wait",until:0,start:0,hurt:0,cue:null};
       else if(mode==="stretch")g.r={reps:0,latched:false,holdStart:0};
       if(mode==="rain"||mode==="pump"){$("meterWrap").style.display="block";setMeter(0);}}
     function newAngle(prev){let a;do{a=(Math.random()<.5?-1:1)*(8+Math.random()*9);}while(Math.abs(a-prev)<6);return Math.round(a);}
@@ -1092,25 +1109,43 @@
         ghud(s.icon+" "+s.name,near?("유지! "+Math.ceil((0.8-g.r.hold)*10)/10+"s"):"","목표 잎(연두) 각도에 손목 맞추기","🌿 맞춤 "+g.r.round+" / "+s.rounds);
       }
       else if(s.mode==="grip"){
-        const r=g.r,cx2=W/2,cy2=198,fist=grip<1.3,open=grip>1.7,relaxed=!fist&&!open;
+        const r=g.r,cx2=W/2,defX=W/2,defY=252,fist=grip<1.3,open=grip>1.7,relaxed=!fist&&!open;
+        const CUE_MS=Math.max(1000,1600-r.trial*45);
         if(r.until===0)r.until=now+700;
-        const settle=(ok,msg)=>{if(ok){r.score++;r.combo++;earnSeeds+=2;sparkle();plantHappy();setCombo(r.combo);burst(cx2,cy2,"#8fe39a",13);popText(msg||"처치! ✓","#dffbe2");}else{r.combo=0;setCombo(0);chime();burst(cx2,cy2,"#f2c08a",10);popText(msg||"앗!","#ffe9cf");}r.phase="result";r.until=now+480;};
+        // 지켜야 할 새싹 (벌레가 노리는 목표)
+        const shake=(r.hurt&&now-r.hurt<300)?Math.sin(now*0.06)*4*(1-(now-r.hurt)/300):0;
+        ctx.save();ctx.translate(defX+shake,defY);
+        ctx.fillStyle="rgba(90,66,38,.5)";ctx.beginPath();ctx.ellipse(0,15,28,8,0,0,7);ctx.fill();
+        ctx.strokeStyle="#4ea83f";ctx.lineWidth=4;ctx.lineCap="round";ctx.beginPath();ctx.moveTo(0,15);ctx.lineTo(Math.sin(now*0.0016)*2,-8);ctx.stroke();
+        ctx.fillStyle="#6fce74";ctx.beginPath();ctx.ellipse(-9,-1,9,4.5,-0.5,0,7);ctx.fill();ctx.beginPath();ctx.ellipse(9,-1,9,4.5,0.5,0,7);ctx.fill();
+        ctx.fillStyle="#ff9fb0";ctx.beginPath();ctx.arc(0,-12,6.5,0,7);ctx.fill();ctx.fillStyle="#ffd0dc";ctx.beginPath();ctx.arc(-2,-14,2.4,0,7);ctx.fill();
+        ctx.restore();
+        const settle=(ok,bx,by,msg)=>{
+          if(ok){r.score++;r.combo++;earnSeeds+=2;sparkle();plantHappy();setCombo(r.combo);burst(bx,by,"#8fe39a",13);for(let k=0;k<8;k++)addPart(bx,by,["#8fe39a","#c8f0b0"][k%2],{vx:(Math.random()-.5)*3.4,vy:(Math.random()-.5)*3.4,life:0.5,r:3,g:4});popText(msg||"처치! ✓","#dffbe2");}
+          else{r.combo=0;setCombo(0);chime();r.hurt=now;burst(defX,defY,"#f2c08a",10);popText(msg||"앗!","#ffe9cf");}
+          r.phase="result";r.until=now+480;};
         if(r.phase==="wait"){
-          if(now>=r.until&&relaxed){r.cue={rock:Math.random()<0.5};r.phase="cue";r.until=now+1600;}
+          if(now>=r.until&&relaxed){r.cue={rock:Math.random()<0.5,fx:cx2+(Math.random()*2-1)*W*0.42,fy:-26};r.phase="cue";r.start=now;r.until=now+CUE_MS;}
           else if(now>=r.until)r.until=now+150;
-          ghud(s.icon+" "+s.name,relaxed?"준비…":"손 살짝 풀고 대기","🪨주먹 / 🍃손바닥 쫙","🦋 "+r.score+" / "+s.reps);
+          ghud(s.icon+" "+s.name,relaxed?"준비… 벌레가 와요":"손 살짝 풀고 대기","🪲딱정벌레=✊주먹 · 🐛잎벌레=🖐️손바닥","🦋 "+r.score+" / "+s.reps);
         }
         else if(r.phase==="cue"){
-          const needFist=r.cue.rock;
-          if(needFist){if(fist)settle(true,"퍽! 처치 ✓");else if(open)settle(false,"주먹이었어!");else if(now>=r.until)settle(false,"놓쳤다!");}
-          else{if(open)settle(true,"휙! 처치 ✓");else if(fist)settle(false,"손바닥이었어!");else if(now>=r.until)settle(false,"놓쳤다!");}
-          ctx.font="58px sans-serif";ctx.textAlign="center";ctx.fillText(needFist?"🪨":"🍃",cx2,cy2+6);
-          ctx.font="22px 'Jua',sans-serif";ctx.fillStyle=needFist?"#f2a8a8":"#9bd089";ctx.fillText(needFist?"주먹! ✊":"손바닥 쫙! 🖐️",cx2,cy2+50);
-          const rem=clamp((r.until-now)/1600,0,1);ctx.fillStyle="rgba(255,255,255,.25)";rr(cx2-60,cy2+62,120,8,4);ctx.fill();ctx.fillStyle=needFist?"#e88aa1":"#6ec86e";rr(cx2-60,cy2+62,120*rem,8,4);ctx.fill();
-          ghud(s.icon+" "+s.name,needFist?"주먹!":"쫙!","","🦋 "+r.score+" / "+s.reps);
+          const needFist=r.cue.rock,p=clamp((now-r.start)/CUE_MS,0,1);
+          const bx=r.cue.fx+(defX-r.cue.fx)*p,by=r.cue.fy+(defY-24-r.cue.fy)*p;
+          // 접근 경로 & 필요 동작 색 오라
+          ctx.strokeStyle="rgba(255,255,255,.12)";ctx.lineWidth=2;ctx.setLineDash([4,8]);ctx.beginPath();ctx.moveTo(r.cue.fx,r.cue.fy);ctx.lineTo(defX,defY-24);ctx.stroke();ctx.setLineDash([]);
+          ctx.globalAlpha=.22+p*0.12;ctx.fillStyle=needFist?"#e88aa1":"#7bd07b";ctx.beginPath();ctx.arc(bx,by,22+p*8,0,7);ctx.fill();ctx.globalAlpha=1;
+          pestBug(bx,by,now,needFist,0.85+p*0.55);
+          ctx.font="20px sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(needFist?"✊":"🖐️",bx,by-26);ctx.textBaseline="alphabetic";
+          // 시간(도달) 게이지
+          const rem=1-p;ctx.fillStyle="rgba(255,255,255,.25)";rr(defX-44,defY+22,88,7,4);ctx.fill();ctx.fillStyle=needFist?"#e88aa1":"#6ec86e";rr(defX-44,defY+22,88*rem,7,4);ctx.fill();
+          if(needFist){if(fist)settle(true,bx,by,"콩! 처치 ✓");else if(open)settle(false,bx,by,"딱정벌레였어!");else if(p>=1)settle(false,bx,by,"새싹을 지켜요!");}
+          else{if(open)settle(true,bx,by,"휙! 처치 ✓");else if(fist)settle(false,bx,by,"잎벌레였어!");else if(p>=1)settle(false,bx,by,"새싹을 지켜요!");}
+          ghud(s.icon+" "+s.name,needFist?"딱정벌레! ✊주먹":"잎벌레! 🖐️손바닥","","🦋 "+r.score+" / "+s.reps);
         }
-        else if(r.phase==="result"){if(now>=r.until){r.trial++;if(r.trial>=s.reps){finishStep();return;}r.phase="wait";r.until=now+(400+Math.random()*450);}ghud(s.icon+" "+s.name,"","","🦋 "+r.score+" / "+s.reps);}
-        ctx.font="30px sans-serif";ctx.textAlign="center";ctx.fillStyle="rgba(255,255,255,.85)";ctx.fillText(fist?"✊":(open?"🖐️":"🫳"),cx2,128);
+        else if(r.phase==="result"){if(now>=r.until){r.trial++;if(r.trial>=s.reps){finishStep();return;}r.phase="wait";r.until=now+(360+Math.random()*420);}ghud(s.icon+" "+s.name,"","","🦋 "+r.score+" / "+s.reps);}
+        // 현재 손모양 표시
+        ctx.font="30px sans-serif";ctx.textAlign="center";ctx.fillStyle="rgba(255,255,255,.85)";ctx.fillText(fist?"✊":(open?"🖐️":"🫳"),cx2,120);
       }
       else if(s.mode==="stretch"){
         const a=Math.abs(rel),rearm=Math.max(5,userTh*0.4),cx2=W/2,baseY=groundY+96;
